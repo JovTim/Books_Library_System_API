@@ -1,11 +1,15 @@
 import pymysql
 
 def connection():
-    conn = pymysql.connect(
-        host='',
-        user='',
-        password='',
-        db=''
-    )
-
-    return conn
+    try:
+        conn = pymysql.connect(
+            host='',
+            user='',
+            password='',
+            db=''
+        )
+        print("all good")
+        return conn
+    except pymysql.MySQLError as e:
+        print(f"Error connection {e}")
+        return None
