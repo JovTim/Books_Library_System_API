@@ -7,6 +7,37 @@ fake = Faker()
 
 conn = connection()
 
+"""
+bruh meron palang sbn yung faker library 
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠐⠀⠈⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⢨⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⢡⣤⣶⣶⣦⢠⣶⣷⣾⠀⢃⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡖⣯⠀⠛⠟⡿⠋⠀⢙⠛⠁⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢡⠸⡅⠈⠀⡰⠳⢶⠖⠰⠀⠀⣏⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣷⠀⠀⠰⢷⣶⣿⠹⠀⢰⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣷⣾⣤⣍⣀⣄⣤⢾⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣤⣶⣿⣿⣿⣿⣻⠛⠻⠟⠋⣼⣯⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣄⢤⡖⣪⢕⡮⣝⣿⣿⣿⣿⣿⣿⣿⣶⡌⣸⣿⣿⣿⣓⠀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⢤⠼⣦⣝⢿⣽⢺⡵⣫⣞⡿⣹⠽⣿⣿⣿⣿⣿⣿⣰⣿⣷⣿⣿⣯⣟⢦⡘⣄⣃⣆⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡄⢪⣴⢪⣷⣾⣯⣻⣿⠿⣽⣷⠻⢼⠷⡻⠓⠛⣛⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣳⣽⣲⣭⣷⣸⠷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⣠⡄⢲⣶⢸⣆⡹⢷⣫⣿⣿⣹⣾⣿⣷⣄⢩⣽⢢⡟⣿⣻⢽⣾⣶⡟⢶⣷⣾⣿⣿⣿⡾⣽⣾⣷⣿⣿⣧⡧⡅⢠⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⢀⡀⢘⢦⡰⣿⣎⡹⣏⡟⣿⣶⣿⣧⡽⣿⣿⡿⠿⠿⡿⢺⠿⢙⣳⠏⠿⢿⢿⢇⢛⣮⣿⣿⣿⣿⣿⣽⡷⣿⣿⡿⢯⣽⣷⣯⢩⣴⡢⠀⠀⠀⠀⠀⠀
+⠀⠀⠠⣖⢮⣿⡾⣻⣴⠻⢿⣎⡻⣿⣽⢿⣯⣹⣿⡷⠦⠈⠀⠀⢘⠀⠀⡀⣀⢄⡐⠠⠬⠨⠷⠠⠀⠹⠝⡛⠓⠛⠟⣿⣿⣿⡿⢷⣼⣿⣎⣁⡄⡑⠄⠀⠀⠀
+⢠⣎⣤⣭⡳⢫⢻⣿⣿⣿⣾⣛⣶⣿⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⣿⣽⣷⣯⣿⣿⣿⢽⢐⣶⢶⡼⣿⣿⣿⣿⣶⣿⣿⣿⡿⣽⣾⢿⡿⣿⡿⣭⠇⢂⡆⡀⠀
+⣩⣝⣛⣒⣻⣿⣷⣮⣟⣷⣿⡟⠟⠉⠀⢹⣿⣿⣿⣿⢭⠤⠍⣀⢉⡊⢈⢢⠀⠀⢂⠐⢀⠶⠿⠘⠈⠩⡉⠻⠟⠿⢟⡏⠉⠻⣿⣿⣿⣏⣿⣷⣿⣿⠿⠶⣾⡄
+⢿⣿⢯⣷⢾⣶⣿⣿⣿⣯⡁⠀⠀⠀⠀⠐⣻⣿⣿⣿⣷⣿⣶⣷⣞⣷⣦⣾⣽⣾⣶⣴⠾⣶⢾⠶⡷⢼⣿⣿⣶⣶⣶⡆⠀⠀⠈⢻⣿⣿⡿⣿⡿⣯⣽⣿⣵⠀
+⠀⠘⢿⣿⢿⣯⣩⣽⣿⣧⡿⣄⠀⠀⠀⠀⠘⣿⣿⣯⣝⢝⠚⠍⢙⠁⠏⣎⠛⠙⢓⠑⠸⢘⣻⣛⠿⢧⢿⣻⣿⡿⣿⣿⠀⢀⣀⣼⢿⣽⡛⢿⡿⣮⣽⣷⠏⠀
+⠀⠀⠀⠙⢾⣽⡿⠿⢿⣩⣿⣟⣙⠄⠀⠀⠀⢽⣿⣿⣿⣴⣿⣾⣾⣿⣺⢾⣿⣿⣷⣎⠪⣉⢰⡀⣤⢷⢾⣶⣴⣦⣤⣴⠾⣿⣿⣿⣮⣭⣵⣮⣽⡿⠟⠀⠀⠀
+⠀⠀⠀⠀⠀⠹⢿⣿⣾⣿⣿⣿⣟⢿⣤⠀⠀⠈⣿⣿⡯⠍⠩⠉⡩⣉⢉⢩⠩⠩⠙⠉⠁⣓⣚⣃⠗⠖⠺⢿⢿⣿⣿⣿⣿⣯⣾⢷⣤⢿⣯⠿⠋⠁⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⣿⣷⣏⣿⣾⣷⣀⡀⣸⢿⣿⣿⣿⣿⣷⣿⣿⣿⣿⣿⣿⡏⡝⣍⣿⡈⣇⢰⣠⣦⣶⣦⣦⣤⣼⡿⣇⣿⣿⠏⠁⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⢿⣽⣷⣍⡿⠋⠀⠉⠈⠘⣿⣭⠭⠉⠉⣙⠧⣙⢉⡛⢋⠃⠉⠊⠹⠒⠙⡻⠿⠿⡿⣿⣿⣿⣿⣷⠟⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠹⣄⠒⠠⠤⠄⠂⣿⣿⣿⣯⣶⣾⣷⣾⣿⣾⣔⣚⢴⠄⡏⣭⠙⠐⢀⢬⡴⡣⢨⣴⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠳⢤⣤⠀⣼⣿⣯⡍⠍⠀⡊⡈⣌⠀⣟⢁⠏⠠⠐⠸⠛⠿⣉⣩⣾⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⡿⡿⣿⡿⢿⣿⡽⣿⣿⡎⣎⣿⡍⡕⣚⡉⣛⣉⣹⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⣿⣿⣭⣂⣶⡰⢶⣔⢶⣀⣦⡆⡄⣠⣈⢻⢻⣻⣿⣱⣼⣺⣵⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢐⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿⣿⠕⣿⣟⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+"""
 def random_isbn() -> str:
     isbn = random.randint(100, 999)
     country = random.randint(1, 99)
@@ -48,6 +79,65 @@ def insert_books() -> None:
             cursor.close()
             conn.close()
 
+def insert_author() -> None:
+    if conn:
+        try:
+            cursor = conn.cursor()
+
+            query = """
+                    INSERT INTO books_libraries.authors(author_first_name, author_last_name)
+                    VALUE(%s, %s)
+                    """
+
+            for _ in range(25):
+                author_first_name = fake.first_name()
+                author_last_name = fake.last_name()
+                values = (author_first_name, author_last_name)
+
+                cursor.execute(query, values)
+                conn.commit()
+
+                print("Author Record Inserted!")
+
+        except pymysql.MySQLError as e:
+            print(f"ERROR: {e}")
+            conn.rollback()
+        finally:
+            cursor.close()
+            conn.close()
+
+def insert_address() -> None:
+    if conn:
+        try:
+            cursor = conn.cursor()
+
+            query = """
+                    INSERT INTO books_libraries.addresses(street, city, zip_code, province, country)
+                    VALUES(%s, %s, %s, %s, %s)
+                    """
+
+            for _ in range(25):
+                street = fake.street_address()
+                city = fake.city()
+                zip = fake.zipcode()
+                province = fake.state()
+                country = fake.country()
+                values = (street, city, zip, province, country)
+
+                cursor.execute(query, values)
+                conn.commit()
+
+                print("Address Record Inserted!")
+
+        except pymysql.MySQLError as e:
+            print(f"ERROR: {e}")
+            conn.rollback()
+        finally:
+            cursor.close()
+            conn.close()
+
 
 if __name__ == "__main__":
-   insert_books()
+   #insert_books()
+   #insert_author()
+   insert_address()
