@@ -79,32 +79,6 @@ def insert_books() -> None:
             cursor.close()
             conn.close()
 
-def insert_author() -> None:
-    if conn:
-        try:
-            cursor = conn.cursor()
-
-            query = """
-                    INSERT INTO books_libraries.authors(author_first_name, author_last_name)
-                    VALUE(%s, %s)
-                    """
-
-            for _ in range(25):
-                author_first_name = fake.first_name()
-                author_last_name = fake.last_name()
-                values = (author_first_name, author_last_name)
-
-                cursor.execute(query, values)
-                conn.commit()
-
-                print("Author Record Inserted!")
-
-        except pymysql.MySQLError as e:
-            print(f"ERROR: {e}")
-            conn.rollback()
-        finally:
-            cursor.close()
-            conn.close()
 
 def insert_address() -> None:
     if conn:
@@ -234,85 +208,7 @@ def insert_library() -> None:
         finally:
             cursor.close()
             conn.close()
-def insert_books_by_category() -> None:
-    if conn:
-        try:
-            cursor = conn.cursor()
 
-            query = """
-                    INSERT INTO books_libraries.books_by_category(category_id, book_id)
-                    VALUES(%s, %s)
-                    """
-# category_id, book_id
-            for i in range(1, 26):
-                category = random.randint(1, 16)
-                values = (category, i)
-
-                cursor.execute(query, values)
-                conn.commit()
-
-                print("books_by_category Record Inserted!")
-
-        except pymysql.MySQLError as e:
-            print(f"ERROR: {e}")
-            conn.rollback()
-        finally:
-            cursor.close()
-            conn.close()
-
-def insert_member_request() -> None:
-    if conn:
-        try:
-            cursor = conn.cursor()
-
-            query = """
-                    INSERT INTO books_libraries.member_request(member_id, book_id, date_requested, date_located, other_request)
-                    VALUES(%s, %s, %s, %s, %s)
-                    """
-# member_id, book_id, date_requested, date_located, other_request
-            for _ in range(26):
-                member_id = random.randint(1, 26)
-                book_id = random.randint(1, 26)
-                date = fake.date()
-                other_request = fake.sentence(nb_words=10)
-                values = (member_id, book_id, date, date, other_request)
-
-                cursor.execute(query, values)
-                conn.commit()
-
-                print("member_request Record Inserted!")
-
-        except pymysql.MySQLError as e:
-            print(f"ERROR: {e}")
-            conn.rollback()
-        finally:
-            cursor.close()
-            conn.close()
-
-def insert_books_by_authors() -> None:
-    if conn:
-        try:
-            cursor = conn.cursor()
-
-            query = """
-                    INSERT INTO books_libraries.books_by_authors(author_id, book_id)
-                    VALUES(%s, %s)
-                    """
-# author_id, book_id
-            for i in range(1, 26):
-                values = (i, i)
-
-                cursor.execute(query, values)
-                conn.commit()
-
-                print("books_by_authors Record Inserted!")
-
-        except pymysql.MySQLError as e:
-            print(f"ERROR: {e}")
-            conn.rollback()
-        finally:
-            cursor.close()
-            conn.close()
 
 def insert_books_at_libraries() -> None:
     if conn:
@@ -343,16 +239,40 @@ def insert_books_at_libraries() -> None:
             cursor.close()
             conn.close()
 
+def update_books() -> None:
+    if conn:
+        try:
+            cursor = conn.cursor()
+            query = """
+                    UPDATE books_libraries.books
+                    SET category_id = %s,
+                    author_name = %s
+                    WHERE book_id = %s
+                    """
+            
+            for i in range(1, 26):
+                category_id = random.randint(1, 16)
+                author_name = fake.name()
+                values = (category_id, author_name, i)
+                
+                cursor.execute(query, values)
+                conn.commit()
+                print("books updated!")
+
+        except pymysql.MySQLError as e:
+            print(f"ERROR: {e}")
+            conn.rollback()
+        finally:
+            cursor.close()
+            conn.close()
 
 if __name__ == "__main__":
    #insert_books()
-   #insert_author()
    #insert_address()
    #insert_category()
    #insert_member()
    #insert_library()
-   #insert_books_by_category()
    #insert_member_request()
-   #insert_books_by_authors()
    #insert_books_at_libraries()
+   #update_books()
    ...
