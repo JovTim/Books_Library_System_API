@@ -40,5 +40,35 @@ def get_member_request() -> None:
 
     return make_response(jsonify(data), 200)
 
+#member_id, book_id, date_requested, date_located, other_request
+@app.route("/member_request", methods=["POST"])
+def add_book_request() -> None:
+    try:
+        cur = mysql.connection.cursor()
+        info = request.get_json()
+        member_id = info["member_id"]
+        book_id = info["book_id"]
+        date_requested = info["date_requested"]
+        date_located = info["date_located"]
+        other_request = info["other_request"]
+
+        query = """
+                INSERT INTO books_libraries.member_request(member_id, book_id, date_requested, date_located, other_request)
+                VALUES(%s, %s, %s, %s, %s)
+                """
+        values = (member_id, book_id, date_requested, date_located, other_request)
+        cur.execute(query, values)
+        mysql.connection.commit()
+    except:
+        print("Error")
+        mysql.connection.rollback()
+    finally:
+        print("row(s) affected: {}".format(cur.rowcount))
+        rows_affected = cur.rowcount
+        cur.close()
+        return make_response(jsonify({"message": "book request added successfully", "row_affected": rows_affected}))
+
+    
+
 if __name__ == "__main__":
     app.run(debug=True)
