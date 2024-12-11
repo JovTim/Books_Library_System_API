@@ -289,6 +289,61 @@ def insert_member_request() -> None:
             cursor.close()
             conn.close()
 
+def insert_books_by_authors() -> None:
+    if conn:
+        try:
+            cursor = conn.cursor()
+
+            query = """
+                    INSERT INTO books_libraries.books_by_authors(author_id, book_id)
+                    VALUES(%s, %s)
+                    """
+# author_id, book_id
+            for i in range(1, 26):
+                values = (i, i)
+
+                cursor.execute(query, values)
+                conn.commit()
+
+                print("books_by_authors Record Inserted!")
+
+        except pymysql.MySQLError as e:
+            print(f"ERROR: {e}")
+            conn.rollback()
+        finally:
+            cursor.close()
+            conn.close()
+
+def insert_books_at_libraries() -> None:
+    if conn:
+        try:
+            cursor = conn.cursor()
+
+            query = """
+                    INSERT INTO books_libraries.books_at_libraries(library_id, book_id, quantity_in_stock)
+                    VALUES(%s, %s, %s)
+                    """
+# library_id, book_id, quantity_in_stock
+            for i in range(1, 26):
+                random_books = random.randint(4, 26 + 1)
+                for j in range(1, random_books):
+                    library_id = i
+                    quantity_in_stock = random.randint(0, 99)
+                    values = (library_id, j, quantity_in_stock)
+
+                    cursor.execute(query, values)
+                    conn.commit()
+
+                    print("books_at_libraries Record Inserted!")
+
+        except pymysql.MySQLError as e:
+            print(f"ERROR: {e}")
+            conn.rollback()
+        finally:
+            cursor.close()
+            conn.close()
+
+
 if __name__ == "__main__":
    #insert_books()
    #insert_author()
@@ -297,4 +352,7 @@ if __name__ == "__main__":
    #insert_member()
    #insert_library()
    #insert_books_by_category()
-   insert_member_request()
+   #insert_member_request()
+   #insert_books_by_authors()
+   #insert_books_at_libraries()
+   ...
