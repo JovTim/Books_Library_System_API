@@ -1,6 +1,7 @@
 from flask import Flask, make_response, jsonify, request
 from flask_mysqldb import MySQL
 from db_connection2 import db_information
+from validation.input_validation import *
 
 import jwt
 import datetime
@@ -86,27 +87,36 @@ def add_book_request() -> None:
     try:
         cur = mysql.connection.cursor()
         info = request.get_json()
-        member_id = info["member_id"]
-        book_id = info["book_id"]
-        date_requested = info["date_requested"]
-        date_located = info["date_located"]
-        other_request = info["other_request"]
+        member_id = info.get("member_id")
+        book_id = info.get("book_id")
+        date_requested = info.get("date_requested")
+        date_located = info.get("date_located")
+        other_request = info.get("other_request")
+
+        # Input validation
+        if not (integer_checker(member_id) and 
+                integer_checker(book_id) and 
+                is_valid_date(date_requested) and 
+                is_valid_date(date_located) and 
+                string_checker(other_request)):
+            return jsonify({"Message": "Value type error"}), 400
 
         query = """
                 INSERT INTO books_libraries.member_request(member_id, book_id, date_requested, date_located, other_request)
                 VALUES(%s, %s, %s, %s, %s)
                 """
+
         values = (member_id, book_id, date_requested, date_located, other_request)
         cur.execute(query, values)
         mysql.connection.commit()
-    except:
-        print("Error")
+    except Exception as e:
+        print(f"Error: {e}")
         mysql.connection.rollback()
     finally:
         print("row(s) affected: {}".format(cur.rowcount))
         rows_affected = cur.rowcount
         cur.close()
-        return make_response(jsonify({"message": "book request added successfully", "row_affected": rows_affected}))
+    return make_response(jsonify({"message": "book request added successfully", "row_affected": rows_affected}))
 # ----------------------------------------------
 
 # ---------------BOOKS MANAGEMENT--------------
@@ -157,16 +167,20 @@ def add_book():
             return validation_result 
  
         cur = mysql.connection.cursor()
-        isbn = info["isbn"]
-        book_title = info["book_title"]
-        date_of_publication = info["date_of_publication"]
-        category_id = info["category_id"]
-        author_name = info["author_name"]
+        isbn = info.get("isbn")
+        book_title = info.get("book_title")
+        date_of_publication = info.get("date_of_publication")
+        category_id = info.get("category_id")
+        author_name = info.get("author_name")
+
+        if not (string_checker(isbn) and string_checker(book_title) and is_valid_date(date_of_publication) and integer_checker(category_id) and string_checker(author_name)):
+            return jsonify({"Message": "value type error"}), 400
 
         query = """
             INSERT INTO books_libraries.books(isbn, book_title, date_of_publication, category_id, author_name)
             VALUES(%s, %s, %s, %s, %s);
         """
+        
         values = (isbn, book_title, date_of_publication, category_id, author_name)
         cur.execute(query, values)
         mysql.connection.commit()
@@ -205,11 +219,14 @@ def edit_book(id: int) -> None:
             return validation_result
 
         cur = mysql.connection.cursor()
-        isbn = info["isbn"]
-        book_title = info["book_title"]
-        date_of_publication = info["date_of_publication"]
-        category_id = info["category_id"]
-        author_name = info["author_name"]
+        isbn = info.get("isbn")
+        book_title = info.get("book_title")
+        date_of_publication = info.get("date_of_publication")
+        category_id = info.get("category_id")
+        author_name = info.get("author_name")
+
+        if not (string_checker(isbn) and string_checker(book_title) and is_valid_date(date_of_publication) and integer_checker(category_id) and string_checker(author_name)):
+            return jsonify({"Message": "value type error"}), 400
 
         query = """
                 UPDATE books_libraries.books as books
@@ -252,6 +269,7 @@ def delete_book(id: int) -> None:
                 DELETE FROM books_libraries.books
                 WHERE books.book_id = %s;
                 """
+        
         cur.execute(query, (id,))
         mysql.connection.commit()
     except Exception as e:
@@ -320,9 +338,12 @@ def add_library() -> None:
             return validation_result
 
         cur = mysql.connection.cursor()
-        address_id = info["address_id"]
-        library_name = info["library_name"]
-        library_details = info["library_details"]
+        address_id = info.get("address_id")
+        library_name = info.get("library_name")
+        library_details = info.get("library_details")
+
+        if not (integer_checker(address_id) and string_checker(library_name) and string_checker(library_details)):
+            return jsonify({"message": "value error"}), 400
 
         query = """
             INSERT INTO books_libraries.libraries(address_id, library_name, library_details)
@@ -364,9 +385,12 @@ def edit_library(id: int) -> None:
             return validation_result
 
         cur = mysql.connection.cursor()
-        address_id = info["address_id"]
-        library_name = info["library_name"]
-        library_details = info["library_details"]
+        address_id = info.get("address_id")
+        library_name = info.get("library_name")
+        library_details = info.get("library_details")
+
+        if not (integer_checker(address_id) and string_checker(library_name) and string_checker(library_details)):
+            return jsonify({"message": "value error"}), 400
 
         query = """
             UPDATE books_libraries.libraries as libraries
