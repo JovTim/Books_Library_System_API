@@ -23,7 +23,7 @@ def data_fetch(query):
     cur.close()
 
     return data
-
+# ----------------BOOK REQUEST------------------------
 @app.route("/member_requests", methods=["GET"])
 def get_member_request() -> None:
     cur = mysql.connection.cursor()
@@ -40,7 +40,6 @@ def get_member_request() -> None:
 
     return make_response(jsonify(data), 200)
 
-#member_id, book_id, date_requested, date_located, other_request
 @app.route("/member_request", methods=["POST"])
 def add_book_request() -> None:
     try:
@@ -67,8 +66,41 @@ def add_book_request() -> None:
         rows_affected = cur.rowcount
         cur.close()
         return make_response(jsonify({"message": "book request added successfully", "row_affected": rows_affected}))
+# ----------------------------------------------
 
+# ---------------BOOKS MANAGEMENT--------------
+
+@app.route("/books", methods=["GET"])
+def get_books() -> None:
+    cur = mysql.connection.cursor()
+    query = """
+            SELECT books.book_id, books.isbn, books.book_title, books.date_of_publication, categories.category_name, books.author_name
+            FROM books_libraries.books as books
+            INNER JOIN books_libraries.categories as categories
+            ON categories.category_id = books.category_id;
+            """
     
+    data = data_fetch(query)
+
+    return make_response(jsonify(data), 200)
+
+@app.route("/books/<int:id>", methods=["GET"])
+def get_book_by_id(id: int):
+    query = """
+            SELECT books.book_id, books.isbn, books.book_title, books.date_of_publication, categories.category_name, books.author_name
+            FROM books_libraries.books as books
+            INNER JOIN books_libraries.categories as categories
+                ON categories.category_id = books.category_id
+            WHERE books.book_id = {};
+            """.format(id)
+    
+    data = data_fetch(query)
+
+    return make_response(jsonify({"books.book_id": id, "count": len(data), "information": data}), 201)
+
+@app.route("/book", methods=["POST"])
+def add_book():
+    ...
 
 if __name__ == "__main__":
     app.run(debug=True)
