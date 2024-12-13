@@ -303,9 +303,49 @@ def get_library_details(id: int) -> None:
 
     return make_response(jsonify({"libraries.library_id": id, "total books": len(data), "information": data}), 201)
 
-@app.route("/library", methods=["POST"])
+@app.route("/library", methods=['POST'])
 def add_library() -> None:
-    ...
+    cur = None 
+    try:
+
+        token_validation = validate_token()
+        if token_validation is not True:
+            return token_validation 
+
+        required_fields = ["address_id", "library_name", "library_details"]
+        validation_result = validate_request_data(required_fields)
+        if isinstance(validation_result, dict):
+            info = validation_result
+        else:
+            return validation_result
+
+        cur = mysql.connection.cursor()
+        address_id = info["address_id"]
+        library_name = info["library_name"]
+        library_details = info["library_details"]
+
+        query = """
+            INSERT INTO books_libraries.libraries(address_id, library_name, library_details)
+            VALUES(%s, %s, %s);
+        """
+        values = (address_id, library_name, library_details)
+        cur.execute(query, values)
+        mysql.connection.commit()
+
+    except Exception as e:
+        print(f"Error: {e}")
+        if cur:
+            mysql.connection.rollback()
+        return jsonify({'message': 'An error occurred while adding the library'}), 500
+    finally:
+        if cur:
+            print("row(s) affected: {}".format(cur.rowcount))
+            rows_affected = cur.rowcount
+            cur.close()
+        else:
+            rows_affected = 0
+
+    return make_response(jsonify({"message": "Library added successfully", "row_affected": rows_affected}), 201)
 
 @app.route("/library/<int:id>", methods=["PUT"])
 def edit_library(id: int) -> None:
