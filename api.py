@@ -155,7 +155,7 @@ def add_book():
             info = validation_result
         else:
             return validation_result 
-
+ 
         cur = mysql.connection.cursor()
         isbn = info["isbn"]
         book_title = info["book_title"]
@@ -189,21 +189,119 @@ def add_book():
 
 @app.route('/book/<int:id>', methods=["PUT"])
 def edit_book(id: int) -> None:
-    ...
+    cur = None
+    try:
+        # Validate the token
+        token_validation = validate_token()
+        if token_validation is not True:
+            return token_validation 
+
+        # Validate the book data
+        required_fields = ["isbn", "book_title", "date_of_publication", "category_id", "author_name"]
+        validation_result = validate_request_data(required_fields)
+        if isinstance(validation_result, dict):
+            info = validation_result
+        else:
+            return validation_result
+
+        cur = mysql.connection.cursor()
+        isbn = info["isbn"]
+        book_title = info["book_title"]
+        date_of_publication = info["date_of_publication"]
+        category_id = info["category_id"]
+        author_name = info["author_name"]
+
+        query = """
+                UPDATE books_libraries.books as books
+                SET isbn = %s, 
+                book_title = %s, 
+                date_of_publication = %s, 
+                category_id = %s, 
+                author_name = %s
+                WHERE books.book_id = %s;
+                """
+        
+        value = (isbn, book_title, date_of_publication, category_id, author_name, id)
+        cur.execute(query, value)
+        mysql.connection.commit()
+    except Exception as e:
+        print(f"Error: {e}")
+        if cur:
+            mysql.connection.rollback()
+        return jsonify({'message': 'An error occurred while updating the book'}), 500
+    finally:
+        if cur:
+            print("row(s) affected: {}".format(cur.rowcount))
+            rows_affected = cur.rowcount
+            cur.close()
+        else:
+            rows_affected = 0
+
+    return make_response(jsonify({"message": "Book updated successfully", "row_affected": rows_affected}), 201)
 
 @app.route("/book/<int:id>", methods=["DELETE"])
 def delete_book(id: int) -> None:
-    ...
+    cur = None
+    try:
+        token_validation = validate_token()
+        if token_validation is not True:
+            return token_validation 
+        
+        cur = mysql.connection.cursor()
+        query = """
+                DELETE FROM books_libraries.books
+                WHERE books.book_id = %s;
+                """
+        cur.execute(query, (id,))
+        mysql.connection.commit()
+    except Exception as e:
+        print(f"Error: {e}")
+        if cur:
+            mysql.connection.rollback()
+        return jsonify({'message': 'An error occurred while deleting the book'}), 500
+    finally:
+        if cur:
+            print("row(s) affected: {}".format(cur.rowcount))
+            rows_affected = cur.rowcount
+            cur.close()
+        else:
+            rows_affected = 0
+
+    return make_response(jsonify({"message": "Book deleted successfully", "row_affected": rows_affected}), 201)
 # --------------------------------------------
 
 # --------------LIBRARY MANAGEMENT------------
 @app.route("/library", methods=["GET"])
 def get_libraries() -> None:
-    ...
+    cur = mysql.connection.cursor()
+    query = """
+            SELECT libraries.library_name, books.book_title, books_at_libraries.quantity_in_stock
+            FROM books_libraries.libraries as libraries
+            INNER JOIN books_libraries.books_at_libraries as books_at_libraries
+                ON books_at_libraries.library_id = libraries.library_id
+            INNER JOIN books_libraries.books as books
+                ON books.book_id = books_at_libraries.book_id
+            """
+    
+    data = data_fetch(query)
+
+    return make_response(jsonify(data), 200)
 
 @app.route("/library/<int:id>/details", methods=["GET"])
 def get_library_details(id: int) -> None:
-    ...
+    query = """
+            SELECT books.book_title, books_at_libraries.quantity_in_stock
+            FROM books_libraries.libraries as libraries
+            INNER JOIN books_libraries.books_at_libraries as books_at_libraries
+                ON books_at_libraries.library_id = libraries.library_id
+            INNER JOIN books_libraries.books as books
+                ON books.book_id = books_at_libraries.book_id
+            WHERE libraries.library_id = {};
+            """.format(id)
+    
+    data = data_fetch(query)
+
+    return make_response(jsonify({"libraries.library_id": id, "total books": len(data), "information": data}), 201)
 
 @app.route("/library", methods=["POST"])
 def add_library() -> None:
@@ -217,5 +315,7 @@ def edit_library(id: int) -> None:
 def delete_library(id: int) -> None:
     ...
 
+
+# -----------------------------
 if __name__ == "__main__":
     app.run(debug=True)
