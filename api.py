@@ -20,7 +20,8 @@ app.config["MYSQL_DB"] = db_information(3)
 
 app.config["MYSQL_CURSORCLASS"] = "DictCursor"
 
-app.config['SECRET_KEY'] = api_key()
+STATIC_TOKEN = api_key()
+
 
 mysql = MySQL(app)
 
@@ -29,50 +30,21 @@ def greetings():
     return "<p>Books and Libraries API</p>"
 
 # ------------ TOKEN -----
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization')
-        if not token:
-            return jsonify({'message': 'Token is missing!'}), 403
-        try:
-            jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-        except jwt.ExpiredSignatureError:
-            return jsonify({'message': 'Token has expired!'}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({'message': 'Invalid token!'}), 401
-        return f(*args, **kwargs)
-    return decorated
+def validate_token():
+    token = request.headers.get('Authorization')
+
+    if not token:
+        return jsonify({'message': 'Token is missing!'}), 403
+
+    token_data = token.split(" ")[1] 
+
+    if token_data == STATIC_TOKEN:
+        return True
+    else:
+        return jsonify({'message': 'Invalid token!'}), 401
 # -----------------------
 
 # --------------- account and data validation -------------
-def validate_account(cur):
-    try:
-        token = request.headers.get('Authorization')
-        if not token:
-            return jsonify({'message': 'Token is missing!'}), 403
-        
-        token_data = token.split(" ")[1]
-        account = jwt.decode(token_data, app.config['SECRET_KEY'], algorithms=["HS256"])
-        email = account.get('email')
-        password = account.get('password')
-        
-        account_query = """
-            SELECT COUNT(*) FROM books_libraries.account 
-            WHERE email_address = %s AND password = %s;
-        """
-        cur.execute(account_query, (email, password))
-        result = cur.fetchone()
-        
-        if result[0] == 0:
-            return jsonify({'message': 'Account does not exist or invalid credentials'}), 401
-        
-        return email, password 
-    
-    except jwt.ExpiredSignatureError:
-        return jsonify({'message': 'Token has expired!'}), 401
-    except jwt.InvalidTokenError:
-        return jsonify({'message': 'Invalid token!'}), 401
     
 def validate_request_data(required_fields):
     info = request.get_json()
@@ -166,12 +138,26 @@ def get_book_by_id(id: int):
     data = data_fetch(query)
 
     return make_response(jsonify({"books.book_id": id, "count": len(data), "information": data}), 201)
-# isbn, book_title, date_of_publication, category_id, author_name
-@app.route("/book", methods=["POST"])
+
+@app.route('/add_book', methods=['POST'])
 def add_book():
+    cur = None  # Initialize the cursor variable
     try:
+        # Validate the token
+        token_validation = validate_token()
+        if token_validation is not True:
+            return token_validation  # Return the error response if token is invalid
+
+        # Validate the book data
+        required_fields = ["isbn", "book_title", "date_of_publication", "category_id", "author_name"]
+        validation_result = validate_request_data(required_fields)
+        if isinstance(validation_result, dict):
+            info = validation_result
+        else:
+            return validation_result  # Return the failure response
+
+        # Insert book data
         cur = mysql.connection.cursor()
-        info = request.get_json()
         isbn = info["isbn"]
         book_title = info["book_title"]
         date_of_publication = info["date_of_publication"]
@@ -179,21 +165,28 @@ def add_book():
         author_name = info["author_name"]
 
         query = """
-                INSERT INTO books_libraries.books(isbn, book_title, date_of_publication, category_id, author_name)
-                VALUES(%s, %s, %s, %s, %s);
-                """
-        
+            INSERT INTO books_libraries.books(isbn, book_title, date_of_publication, category_id, author_name)
+            VALUES(%s, %s, %s, %s, %s);
+        """
         values = (isbn, book_title, date_of_publication, category_id, author_name)
         cur.execute(query, values)
         mysql.connection.commit()
-    except:
-        print("Error")
-        mysql.connection.rollback()
+
+    except Exception as e:
+        print(f"Error: {e}")
+        if cur:
+            mysql.connection.rollback()
+        return jsonify({'message': 'An error occurred while adding the book'}), 500
+
     finally:
-        print("row(s) affected: {}".format(cur.rowcount))
-        rows_affected = cur.rowcount
-        cur.close()
-        return make_response(jsonify({"message": "book added successfully", "row_affected": rows_affected}))
+        if cur:  # Ensure the cursor exists before attempting to close it
+            print("row(s) affected: {}".format(cur.rowcount))
+            rows_affected = cur.rowcount
+            cur.close()
+        else:
+            rows_affected = 0
+
+    return make_response(jsonify({"message": "Book added successfully", "row_affected": rows_affected}), 201)
 
 if __name__ == "__main__":
     app.run(debug=True)
