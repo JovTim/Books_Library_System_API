@@ -45,6 +45,46 @@ def token_required(f):
     return decorated
 # -----------------------
 
+# --------------- account and data validation -------------
+def validate_account(cur):
+    try:
+        token = request.headers.get('Authorization')
+        if not token:
+            return jsonify({'message': 'Token is missing!'}), 403
+        
+        token_data = token.split(" ")[1]
+        account = jwt.decode(token_data, app.config['SECRET_KEY'], algorithms=["HS256"])
+        email = account.get('email')
+        password = account.get('password')
+        
+        account_query = """
+            SELECT COUNT(*) FROM books_libraries.account 
+            WHERE email_address = %s AND password = %s;
+        """
+        cur.execute(account_query, (email, password))
+        result = cur.fetchone()
+        
+        if result[0] == 0:
+            return jsonify({'message': 'Account does not exist or invalid credentials'}), 401
+        
+        return email, password 
+    
+    except jwt.ExpiredSignatureError:
+        return jsonify({'message': 'Token has expired!'}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({'message': 'Invalid token!'}), 401
+    
+def validate_request_data(required_fields):
+    info = request.get_json()
+    if not info:
+        return jsonify({"message": "Invalid JSON payload!"}), 400
+    
+    if not all(field in info for field in required_fields):
+        return jsonify({"Message": f"Missing required fields: {required_fields}"}), 400
+    
+    return info
+
+
 def data_fetch(query):
     cur = mysql.connection.cursor()
     cur.execute(query)
