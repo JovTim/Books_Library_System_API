@@ -139,14 +139,14 @@ def get_book_by_id(id: int):
 
     return make_response(jsonify({"books.book_id": id, "count": len(data), "information": data}), 201)
 
-@app.route('/add_book', methods=['POST'])
+@app.route('/book', methods=['POST'])
 def add_book():
-    cur = None  # Initialize the cursor variable
+    cur = None 
     try:
         # Validate the token
         token_validation = validate_token()
         if token_validation is not True:
-            return token_validation  # Return the error response if token is invalid
+            return token_validation 
 
         # Validate the book data
         required_fields = ["isbn", "book_title", "date_of_publication", "category_id", "author_name"]
@@ -154,9 +154,8 @@ def add_book():
         if isinstance(validation_result, dict):
             info = validation_result
         else:
-            return validation_result  # Return the failure response
+            return validation_result 
 
-        # Insert book data
         cur = mysql.connection.cursor()
         isbn = info["isbn"]
         book_title = info["book_title"]
@@ -179,7 +178,7 @@ def add_book():
         return jsonify({'message': 'An error occurred while adding the book'}), 500
 
     finally:
-        if cur:  # Ensure the cursor exists before attempting to close it
+        if cur:
             print("row(s) affected: {}".format(cur.rowcount))
             rows_affected = cur.rowcount
             cur.close()
@@ -187,6 +186,36 @@ def add_book():
             rows_affected = 0
 
     return make_response(jsonify({"message": "Book added successfully", "row_affected": rows_affected}), 201)
+
+@app.route('/book/<int:id>', methods=["PUT"])
+def edit_book(id: int) -> None:
+    ...
+
+@app.route("/book/<int:id>", methods=["DELETE"])
+def delete_book(id: int) -> None:
+    ...
+# --------------------------------------------
+
+# --------------LIBRARY MANAGEMENT------------
+@app.route("/library", methods=["GET"])
+def get_libraries() -> None:
+    ...
+
+@app.route("/library/<int:id>/details", methods=["GET"])
+def get_library_details(id: int) -> None:
+    ...
+
+@app.route("/library", methods=["POST"])
+def add_library() -> None:
+    ...
+
+@app.route("/library/<int:id>", methods=["PUT"])
+def edit_library(id: int) -> None:
+    ...
+
+@app.route("/library/<int:id>", methods=["DELETE"])
+def delete_library(id: int) -> None:
+    ...
 
 if __name__ == "__main__":
     app.run(debug=True)
