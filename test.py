@@ -58,6 +58,12 @@ def index():
 def get_books():
     return "<p>Forever</p>"
 
+@app.route('/library')
+def get_library():
+    return "<p>Gonzalez-Martinez library</p> <p>Banks-Torres library</p>"
+
+
+
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
@@ -82,4 +88,12 @@ def test_get_book(client, mock_db_connection):
     assert response.status_code == 200
     assert "Forever" in response.data.decode()
 
-
+def test_get_library(client, mock_db_connection):
+    mock_db_connection.cursor.return_value.fetchall.return_value = [("Gonzalez-Martinez library", "Banks-Torres library")]
+    
+    response = client.get("/library")
+    
+    assert response.status_code == 200
+    response_data = response.data.decode()
+    assert "Gonzalez-Martinez library" in response_data
+    assert "Banks-Torres library" in response_data
