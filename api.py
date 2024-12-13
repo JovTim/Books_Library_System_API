@@ -45,7 +45,7 @@ def validate_token():
         return jsonify({'message': 'Invalid token!'}), 401
 # -----------------------
 
-# --------------- account and data validation -------------
+# ---------------data validation -------------
     
 def validate_request_data(required_fields):
     info = request.get_json()
@@ -57,6 +57,31 @@ def validate_request_data(required_fields):
     
     return info
 
+# ---------------USER-ROLE ACCESS-----------
+def check_permission(email: str, password: str) -> bool:
+    cur = mysql.connection.cursor()
+    
+    query = """
+            SELECT COUNT(*) as count 
+            FROM books_libraries.account 
+            WHERE email_address = %s AND password = %s;
+            """
+    values = (email, password)
+    
+    try:
+        cur.execute(query, values)
+        
+        result = cur.fetchone()
+        
+        # Handle dictionary result
+        count = result['count'] if result and 'count' in result else 0
+        
+        return count > 0
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
+    finally:
+        cur.close()
 
 def data_fetch(query):
     cur = mysql.connection.cursor()
@@ -151,6 +176,12 @@ def get_book_by_id(id: int):
 
 @app.route('/book', methods=['POST'])
 def add_book():
+    email = request.args.get('email')
+    password = request.args.get('password')
+    
+    if not (check_permission(email, password)):
+        return jsonify({"message": "No account exists! Cannot access!"})
+
     cur = None 
     try:
         # Validate the token
@@ -203,6 +234,12 @@ def add_book():
 
 @app.route('/book/<int:id>', methods=["PUT"])
 def edit_book(id: int) -> None:
+    email = request.args.get('email')
+    password = request.args.get('password')
+    
+    if not (check_permission(email, password)):
+        return jsonify({"message": "No account exists! Cannot access!"})
+
     cur = None
     try:
         # Validate the token
@@ -258,6 +295,12 @@ def edit_book(id: int) -> None:
 
 @app.route("/book/<int:id>", methods=["DELETE"])
 def delete_book(id: int) -> None:
+    email = request.args.get('email')
+    password = request.args.get('password')
+    
+    if not (check_permission(email, password)):
+        return jsonify({"message": "No account exists! Cannot access!"})
+
     cur = None
     try:
         token_validation = validate_token()
@@ -323,6 +366,12 @@ def get_library_details(id: int) -> None:
 
 @app.route("/library", methods=['POST'])
 def add_library() -> None:
+    email = request.args.get('email')
+    password = request.args.get('password')
+    
+    if not (check_permission(email, password)):
+        return jsonify({"message": "No account exists! Cannot access!"})
+
     cur = None 
     try:
 
@@ -370,6 +419,12 @@ def add_library() -> None:
 
 @app.route("/library/<int:id>", methods=["PUT"])
 def edit_library(id: int) -> None:
+    email = request.args.get('email')
+    password = request.args.get('password')
+    
+    if not (check_permission(email, password)):
+        return jsonify({"message": "No account exists! Cannot access!"})
+
     cur = None 
     try:
 
@@ -420,6 +475,12 @@ def edit_library(id: int) -> None:
 
 @app.route("/library/<int:id>", methods=["DELETE"])
 def delete_library(id: int) -> None:
+    email = request.args.get('email')
+    password = request.args.get('password')
+    
+    if not (check_permission(email, password)):
+        return jsonify({"message": "No account exists! Cannot access!"})
+
     cur = None
     try:
         token_validation = validate_token()
