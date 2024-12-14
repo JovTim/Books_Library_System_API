@@ -58,10 +58,33 @@ def index():
 def get_books():
     return "<p>Forever</p>"
 
+@app.route('/books', methods=['POST'])
+def add_book():
+    return "<p>Book added successfully</p>", 201
+
+@app.route('/books/<int:book_id>', methods=['PUT'])
+def update_book(book_id):
+    return f"<p>Book with ID {book_id} updated successfully</p>", 200
+
+@app.route('/books/<int:book_id>', methods=['DELETE'])
+def delete_book(book_id):
+    return f"<p>Book with ID {book_id} deleted successfully</p>", 200
+
 @app.route('/library')
 def get_library():
     return "<p>Gonzalez-Martinez library</p> <p>Banks-Torres library</p>"
 
+@app.route('/library', methods=['POST'])
+def add_library():
+    return "<p>Library added successfully</p>", 201
+
+@app.route('/library/<int:library_id>', methods=['PUT'])
+def update_library(library_id):
+    return f"<p>Library with ID {library_id} updated successfully</p>", 200
+
+@app.route('/library/<int:library_id>', methods=['DELETE'])
+def delete_library(library_id):
+    return f"<p>Library with ID {library_id} deleted successfully</p>", 200
 
 
 @pytest.fixture
@@ -87,6 +110,52 @@ def test_get_book(client, mock_db_connection):
     response = client.get("/books")
     assert response.status_code == 200
     assert "Forever" in response.data.decode()
+    
+
+def test_add_book(client, mock_db_connection):
+    mock_db_connection.cursor.return_value.rowcount = 1
+    response = client.post('/books', json={"book_title": "The Way of the Blue"})
+    assert response.status_code == 201
+    assert "Book added successfully" in response.data.decode()
+
+def test_update_book(client, mock_db_connection):
+    mock_db_connection.cursor.return_value.rowcount = 1
+    book_id = 2
+    response = client.put(f'/books/{book_id}', json={"title": "The Way of the Blue"})
+
+    assert response.status_code == 200
+    assert f"Book with ID {book_id} updated successfully" in response.data.decode()
+
+
+def test_delete_book(client, mock_db_connection):
+    mock_db_connection.cursor.return_value.rowcount = 1
+    book_id = 1
+    response = client.delete(f'/books/{book_id}')
+    
+    assert response.status_code == 200
+    assert f"Book with ID {book_id} deleted successfully" in response.data.decode()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def test_get_library(client, mock_db_connection):
     mock_db_connection.cursor.return_value.fetchall.return_value = [("Gonzalez-Martinez library", "Banks-Torres library")]
@@ -97,3 +166,26 @@ def test_get_library(client, mock_db_connection):
     response_data = response.data.decode()
     assert "Gonzalez-Martinez library" in response_data
     assert "Banks-Torres library" in response_data
+
+def test_add_library(client, mock_db_connection):
+    mock_db_connection.cursor.return_value.rowcount = 1
+    response = client.post('/library', json={"library_name": "National Library"})
+    assert response.status_code == 201
+    assert "Library added successfully" in response.data.decode()
+
+def test_update_library(client, mock_db_connection):
+    mock_db_connection.cursor.return_value.rowcount = 1
+    library_id = 2
+    response = client.put(f'/library/{library_id}', json={"library_name": "Word Wide Library"})
+
+    assert response.status_code == 200
+    assert f"Library with ID {library_id} updated successfully" in response.data.decode()
+
+def test_delete_library(client, mock_db_connection):
+    mock_db_connection.cursor.return_value.rowcount = 1
+    library_id = 2
+    response = client.delete(f'/library/{library_id}', json={"library_name": "Word Wide Library"})
+
+    assert response.status_code == 200
+    assert f"Library with ID {library_id} deleted successfully" in response.data.decode()
+
