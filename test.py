@@ -137,26 +137,6 @@ def test_delete_book(client, mock_db_connection):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def test_get_library(client, mock_db_connection):
     mock_db_connection.cursor.return_value.fetchall.return_value = [("Gonzalez-Martinez library", "Banks-Torres library")]
     
