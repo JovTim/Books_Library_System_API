@@ -3,10 +3,6 @@ from flask_mysqldb import MySQL
 from db_connection2 import db_information
 from validation.input_validation import *
 
-import jwt
-import datetime
-from functools import wraps
-
 from api_key import api_key
 
 
